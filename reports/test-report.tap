@@ -1,0 +1,52 @@
+▶ Utility helpers
+  ✔ toHex converts number to 0x hex (1.738594ms)
+  ✔ toHex handles BigInt input (0.211454ms)
+  ✔ toHex handles string input (0.241496ms)
+  ✔ fromHex converts 0x hex to BigInt (0.246454ms)
+  ✔ fromHex handles null/undefined gracefully (0.250537ms)
+  ✔ shannonToCKB converts correctly (0.240329ms)
+  ✔ round-trip: number → toHex → fromHex (0.256954ms)
+✔ Utility helpers (5.462237ms)
+▶ FiberClient construction
+  ✔ throws if url is missing (0.882276ms)
+  ✔ creates client with valid url (1.217978ms)
+  ✔ accepts biscuitToken option without throwing (0.490574ms)
+  ✔ accepts timeoutMs option (0.424367ms)
+  ✔ throws FiberConnectionError on unreachable host (33.721317ms)
+✔ FiberClient construction (37.416959ms)
+▶ Live Fiber node — ckbnode
+  ✔ nodeInfo() returns node info with peerId (10.867598ms)
+  ✔ listChannels() returns channels array (5.111951ms)
+  ✔ listChannels() channels have required fields (4.784998ms)
+  ✔ listChannels() CHANNEL_READY channels have positive local balance (8.272394ms)
+  ✔ listChannels() with includeClosed returns superset (8.553556ms)
+  ✔ listChannels() with unknown peerId returns empty array or error (3.609019ms)
+  ✔ newInvoice() creates an invoice with address (15.708887ms)
+  ✔ newInvoice() invoice address starts with fibb or fiber prefix (6.126932ms)
+  ✔ newInvoice() with zero amount throws or returns error (213.310997ms)
+  ✔ getInvoice() retrieves a created invoice (9.084089ms)
+  ✔ getInvoice() with unknown hash throws FiberRpcError (5.845188ms)
+  ✔ sendPayment() dry_run validates payment without sending (11.858664ms)
+  ✔ getChannel() finds channel by ID (11.764457ms)
+  ✔ getChannel() throws for unknown channel ID (6.205681ms)
+  ✔ FiberRpcError has code and message (5.333613ms)
+✔ Live Fiber node — ckbnode (1840.152644ms)
+▶ Channel balance consistency
+  ✔ localBalanceCKB matches localBalance / 1e8 (9.29321ms)
+  ✔ all channel balances are non-negative (5.928311ms)
+✔ Channel balance consistency (1526.767341ms)
+✖ tests/fiber.test.js (49864.024034ms)
+ℹ tests 30
+ℹ suites 4
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 1
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49863.599085
+
+✖ failing tests:
+
+test at tests/fiber.test.js:1:1
+✖ tests/fiber.test.js (49864.024034ms)
+  'Promise resolution is still pending but the event loop has already resolved'
