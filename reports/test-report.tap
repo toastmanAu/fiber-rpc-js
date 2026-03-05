@@ -1,52 +1,53 @@
 ▶ Utility helpers
-  ✔ toHex converts number to 0x hex (1.738594ms)
-  ✔ toHex handles BigInt input (0.211454ms)
-  ✔ toHex handles string input (0.241496ms)
-  ✔ fromHex converts 0x hex to BigInt (0.246454ms)
-  ✔ fromHex handles null/undefined gracefully (0.250537ms)
-  ✔ shannonToCKB converts correctly (0.240329ms)
-  ✔ round-trip: number → toHex → fromHex (0.256954ms)
-✔ Utility helpers (5.462237ms)
+  ✔ toHex converts number to 0x hex (1.861966ms)
+  ✔ toHex handles BigInt input (0.22808ms)
+  ✔ toHex handles string input (0.213788ms)
+  ✔ fromHex converts 0x hex to BigInt (0.27737ms)
+  ✔ fromHex handles null/undefined gracefully (0.22633ms)
+  ✔ shannonToCKB converts correctly (0.222246ms)
+  ✔ round-trip: number → toHex → fromHex (0.266579ms)
+✔ Utility helpers (5.663481ms)
 ▶ FiberClient construction
-  ✔ throws if url is missing (0.882276ms)
-  ✔ creates client with valid url (1.217978ms)
-  ✔ accepts biscuitToken option without throwing (0.490574ms)
-  ✔ accepts timeoutMs option (0.424367ms)
-  ✔ throws FiberConnectionError on unreachable host (33.721317ms)
-✔ FiberClient construction (37.416959ms)
+  ✔ throws if url is missing (0.901525ms)
+  ✔ creates client with valid url (1.32706ms)
+  ✔ accepts biscuitToken option without throwing (0.66703ms)
+  ✔ accepts timeoutMs option (0.4547ms)
+  ✔ throws FiberConnectionError on unreachable host (32.628451ms)
+✔ FiberClient construction (36.843249ms)
 ▶ Live Fiber node — ckbnode
-  ✔ nodeInfo() returns node info with peerId (10.867598ms)
-  ✔ listChannels() returns channels array (5.111951ms)
-  ✔ listChannels() channels have required fields (4.784998ms)
-  ✔ listChannels() CHANNEL_READY channels have positive local balance (8.272394ms)
-  ✔ listChannels() with includeClosed returns superset (8.553556ms)
-  ✔ listChannels() with unknown peerId returns empty array or error (3.609019ms)
-  ✔ newInvoice() creates an invoice with address (15.708887ms)
-  ✔ newInvoice() invoice address starts with fibb or fiber prefix (6.126932ms)
-  ✔ newInvoice() with zero amount throws or returns error (213.310997ms)
-  ✔ getInvoice() retrieves a created invoice (9.084089ms)
-  ✔ getInvoice() with unknown hash throws FiberRpcError (5.845188ms)
-  ✔ sendPayment() dry_run validates payment without sending (11.858664ms)
-  ✔ getChannel() finds channel by ID (11.764457ms)
-  ✔ getChannel() throws for unknown channel ID (6.205681ms)
-  ✔ FiberRpcError has code and message (5.333613ms)
-✔ Live Fiber node — ckbnode (1840.152644ms)
+  ✔ nodeInfo() returns node info with peerId (18.961199ms)
+  ✔ listChannels() returns channels array (5.527859ms)
+  ✔ listChannels() channels have required fields (9.831322ms)
+  ✔ listChannels() CHANNEL_READY channels have positive local balance (5.0507ms)
+  ✔ listChannels() with includeClosed returns superset (8.604011ms)
+  ✔ listChannels() with unknown peerId returns empty array or error (5.862393ms)
+  ✔ newInvoice() creates an invoice with address (214.473781ms)
+  ✔ newInvoice() invoice address starts with fibb or fiber prefix (6.57988ms)
+  ✔ newInvoice() with zero amount throws or returns error (5.317278ms)
+  ✔ getInvoice() retrieves a created invoice (9.15496ms)
+  ✔ getInvoice() with unknown hash throws FiberRpcError (5.933267ms)
+  ✔ sendPayment() dry_run validates payment without sending (10.257147ms)
+  ✔ getChannel() finds channel by ID (215.027354ms)
+  ✔ getChannel() throws for unknown channel ID (5.83002ms)
+  ✔ FiberRpcError has code and message (5.264197ms)
+✔ Live Fiber node — ckbnode (2041.73788ms)
 ▶ Channel balance consistency
-  ✔ localBalanceCKB matches localBalance / 1e8 (9.29321ms)
-  ✔ all channel balances are non-negative (5.928311ms)
-✔ Channel balance consistency (1526.767341ms)
-✖ tests/fiber.test.js (49864.024034ms)
-ℹ tests 30
-ℹ suites 4
-ℹ pass 29
+  ✔ localBalanceCKB matches localBalance / 1e8 (8.201226ms)
+  ✔ all channel balances are non-negative (7.122954ms)
+✔ Channel balance consistency (1523.699432ms)
+▶ Network option — currency auto-selection
+  ✔ defaults to mainnet (Fibb) when no network specified (1.862258ms)
+  ✔ selects Fibb for network=mainnet (0.687445ms)
+  ✔ selects Fibt for network=testnet (0.852526ms)
+  ✔ selects Fibd for network=devnet (0.666446ms)
+  ✔ throws for unknown network name (0.66528ms)
+  ✔ manual currency override takes precedence over network (0.808485ms)
+✔ Network option — currency auto-selection (6.694504ms)
+ℹ tests 35
+ℹ suites 5
+ℹ pass 35
 ℹ fail 0
-ℹ cancelled 1
+ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 49863.599085
-
-✖ failing tests:
-
-test at tests/fiber.test.js:1:1
-✖ tests/fiber.test.js (49864.024034ms)
-  'Promise resolution is still pending but the event loop has already resolved'
+ℹ duration_ms 3992.265079

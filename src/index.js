@@ -40,6 +40,14 @@ function shannonToCKB(shannonHex) {
   return Number(fromHex(shannonHex)) / 1e8;
 }
 
+// ── Network constants ──────────────────────────────────────────────────────────
+
+const NETWORKS = {
+  mainnet: { currency: 'Fibb', invoicePrefix: 'fibb' },
+  testnet: { currency: 'Fibt', invoicePrefix: 'fibt' },
+  devnet:  { currency: 'Fibd', invoicePrefix: 'fibd' },
+};
+
 // ── Errors ─────────────────────────────────────────────────────────────────────
 
 class FiberRpcError extends Error {
@@ -113,12 +121,16 @@ class FiberRpcTransport {
 class FiberClient {
   /**
    * @param {object} options
-   * @param {string}  options.url           - Fiber node RPC URL, e.g. 'http://127.0.0.1:8227'
+   * @param {string}  options.url            - Fiber node RPC URL, e.g. 'http://127.0.0.1:8227'
+   * @param {string}  [options.network]      - 'mainnet' | 'testnet' | 'devnet' (default: 'mainnet')
    * @param {string}  [options.biscuitToken] - Biscuit auth token (required if node has biscuit_public_key set)
    * @param {number}  [options.timeoutMs]    - Request timeout in ms (default 10000)
    */
   constructor(options) {
     if (!options || !options.url) throw new Error('FiberClient: options.url is required');
+    const network = options.network || 'mainnet';
+    if (!NETWORKS[network]) throw new Error(`FiberClient: unknown network '${network}'. Use mainnet, testnet, or devnet.`);
+    this._network = NETWORKS[network];
     this._rpc = new FiberRpcTransport(options);
   }
 
@@ -216,14 +228,14 @@ class FiberClient {
    * @param {object} params
    * @param {bigint|number|string} params.amount  - Amount in Shannon
    * @param {string}  [params.description]         - Human-readable description
-   * @param {string}  [params.currency='Fibb']      - 'Fibb' (mainnet), 'Fibt' (testnet), 'Fibd' (dev)
+   * @param {string}  [params.currency]      - Override currency (default: auto from network option)
    * @param {number}  [params.expirySeconds=3600]  - Invoice expiry in seconds
    * @returns {{ invoiceAddress: string, invoice: object }}
    */
-  async newInvoice({ amount, description, currency = 'Fibb', expirySeconds = 3600, ...rest }) {
+  async newInvoice({ amount, description, currency, expirySeconds = 3600, ...rest }) {
     const result = await this._rpc.call('new_invoice', {
       amount: toHex(amount),
-      currency,
+      currency: currency || this._network.currency,
       ...(description ? { description } : {}),
       expiry: toHex(expirySeconds),
       ...rest,

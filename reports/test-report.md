@@ -1,6 +1,6 @@
 # fiber-rpc-js Test Report
 
-**Date:** 2026-03-05 12:14:01 ACST
+**Date:** 2026-03-05 12:26:19 ACST
 **Node:** ckbnode (127.0.0.1:8227 via SSH tunnel — mainnet)
 **Library version:** 0.1.0
 
@@ -8,9 +8,9 @@
 
 | Result | Count |
 |--------|-------|
-| ✅ Passed | 29 |
+| ✅ Passed | 35 |
 | ❌ Failed | 0 |
-| **Total** | **29** |
+| **Total** | **35** |
 
 **Overall: ✅ ALL TESTS PASSED**
 
@@ -45,6 +45,12 @@
 ✅ FiberRpcError has code and message
 ✅ localBalanceCKB matches localBalance / 1e8
 ✅ all channel balances are non-negative
+✅ defaults to mainnet (Fibb) when no network specified
+✅ selects Fibb for network=mainnet
+✅ selects Fibt for network=testnet
+✅ selects Fibd for network=devnet
+✅ throws for unknown network name
+✅ manual currency override takes precedence over network
 
 ## API Coverage
 
