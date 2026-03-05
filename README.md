@@ -119,6 +119,39 @@ try {
 }
 ```
 
+## Network Support
+
+```js
+// Mainnet (default)
+const client = new FiberClient({ url: 'http://127.0.0.1:8227' });
+
+// Testnet
+const client = new FiberClient({ url: 'http://127.0.0.1:8227', network: 'testnet' });
+
+// Devnet
+const client = new FiberClient({ url: 'http://127.0.0.1:8227', network: 'devnet' });
+```
+
+The `network` option auto-selects the correct currency enum for invoice creation (`Fibb` / `Fibt` / `Fibd`). You can still override manually with `currency` in `newInvoice()`.
+
+## General Questions
+
+**Does Node.js need to run as a service?**
+
+No — `fiber-rpc-js` is a library, not a daemon. Drop it into any Node project with `npm install`. No background process, no service to manage.
+
+If you're building an Electron app on top of it, Node runs inside the Electron process — users never see it or manage it directly.
+
+**Does it affect the trust model?**
+
+No. The library never holds private keys — it only speaks JSON-RPC to your Fiber node. The trust boundary is your Fiber node itself, which holds the wallet. That's the same trust surface you have without this library.
+
+**Do users need to know about Node.js?**
+
+For developers building on Fiber: yes, they're already in the Node/JS ecosystem.
+
+For end users of an app *built with* this library: no — wrap it in Electron, a web UI, or any other interface and Node becomes invisible. Users shouldn't need to know it exists.
+
 ## Running Tests
 
 Tests run against a live Fiber node via SSH tunnel:
