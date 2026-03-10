@@ -279,6 +279,142 @@ class FiberClient {
     return result;
   }
 
+  /**
+   * Connect to a peer by their multiaddr.
+   * @param {string} addr - Multiaddr string e.g. "/ip4/1.2.3.4/tcp/8228/p2p/QmXxx"
+   */
+  async connectPeer(addr) {
+    await this._rpc.call('connect_peer', { address: addr });
+  }
+
+  /**
+   * Disconnect from a peer.
+   * @param {string} peerId - Peer's libp2p PeerId
+   */
+  async disconnectPeer(peerId) {
+    await this._rpc.call('disconnect_peer', { peer_id: peerId });
+  }
+
+  /**
+   * Accept a pending channel open request.
+   * @param {string} params.tempChannelId - Temporary channel ID from open_channel request
+   * @param {bigint|number|string} params.fundingAmount - Funding amount in Shannon
+   */
+  async acceptChannel({ tempChannelId, fundingAmount, ...rest }) {
+    await this._rpc.call('accept_channel', {
+      temp_channel_id: tempChannelId,
+      funding_amount: toHex(fundingAmount),
+      ...rest,
+    });
+  }
+
+  /**
+   * Gracefully shut down a channel (cooperative close).
+   * @param {string} params.channelId - Channel ID
+   * @param {string} params.closeScript - Lock script for closing output (hex)
+   * @param {bigint|number|string} [params.feeRate] - Fee rate in Shannon/kB
+   */
+  async shutdownChannel({ channelId, closeScript, feeRate, ...rest }) {
+    await this._rpc.call('shutdown_channel', {
+      channel_id: channelId,
+      close_script: closeScript,
+      ...(feeRate !== undefined ? { fee_rate: toHex(feeRate) } : {}),
+      ...rest,
+    });
+  }
+
+  /**
+   * Update channel parameters (fee rates, HTLC limits).
+   * @param {string}  params.channelId  - Channel ID
+   * @param {boolean} [params.enabled]  - Enable/disable routing through this channel
+   */
+  async updateChannel({ channelId, enabled, ...rest }) {
+    await this._rpc.call('update_channel', {
+      channel_id: channelId,
+      ...(enabled !== undefined ? { enabled } : {}),
+      ...rest,
+    });
+  }
+
+  /**
+   * Parse an invoice string into its component fields.
+   * @param {string} invoice - Encoded invoice string (fibb1... / fibt1...)
+   * @returns {object} Parsed invoice object
+   */
+  async parseInvoice(invoice) {
+    return await this._rpc.call('parse_invoice', { invoice });
+  }
+
+  /**
+   * Cancel an invoice (marks it uncollectable).
+   * @param {string} paymentHash - Payment hash of the invoice
+   */
+  async cancelInvoice(paymentHash) {
+    await this._rpc.call('cancel_invoice', { payment_hash: paymentHash });
+  }
+
+  /**
+   * Query the network graph for known nodes.
+   * @param {object} [params]
+   * @param {string} [params.nodeId] - Filter to a specific node pubkey
+   * @returns {{ nodes: Array }}
+   */
+  async graphNodes({ nodeId, limit, afterKey } = {}) {
+    const params = {};
+    if (nodeId) params.node_id = nodeId;
+    if (limit)  params.limit = limit;
+    if (afterKey) params.after_key = afterKey;
+    return await this._rpc.call('graph_nodes', params);
+  }
+
+  /**
+   * Query the network graph for known channels.
+   * @param {object} [params]
+   * @param {string} [params.channelId] - Filter to a specific channel
+   * @returns {{ channels: Array }}
+   */
+  async graphChannels({ channelId, limit, afterKey } = {}) {
+    const params = {};
+    if (channelId) params.channel_id = channelId;
+    if (limit)     params.limit = limit;
+    if (afterKey)  params.after_key = afterKey;
+    return await this._rpc.call('graph_channels', params);
+  }
+
+  /**
+   * Find a payment route between two nodes.
+   * @param {string}  params.sourceNodeId      - Source node pubkey
+   * @param {string}  params.targetNodeId      - Target node pubkey
+   * @param {bigint|number|string} params.amount - Amount to route in Shannon
+   * @returns {{ route: Array<{ channel_outpoint, next_hop, fee, cltv_expiry }> }}
+   */
+  async buildRouter({ sourceNodeId, targetNodeId, amount, maxHops, ...rest }) {
+    const result = await this._rpc.call('build_router', {
+      source_node_id: sourceNodeId,
+      target_node_id: targetNodeId,
+      amount: toHex(amount),
+      ...(maxHops !== undefined ? { max_hops: maxHops } : {}),
+      ...rest,
+    });
+    return result;
+  }
+
+  /**
+   * Send a payment using a pre-built route.
+   * @param {object} params.router - Route from buildRouter()
+   * @param {string} [params.invoice] - Invoice string
+   * @param {string} [params.paymentHash] - Payment hash (if no invoice)
+   * @param {bigint|number|string} [params.amount] - Amount in Shannon (if no invoice)
+   */
+  async sendPaymentWithRouter({ router, invoice, paymentHash, amount, ...rest }) {
+    const params = { router };
+    if (invoice)     params.invoice = invoice;
+    if (paymentHash) params.payment_hash = paymentHash;
+    if (amount !== undefined) params.amount = toHex(amount);
+    const result = await this._rpc.call('send_payment_with_router', { ...params, ...rest });
+    return this._parsePayment(result);
+  }
+
   // ── Internal parsers ─────────────────────────────────────────────────────────
 
   _parseChannel(ch) {

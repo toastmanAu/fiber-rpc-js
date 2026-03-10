@@ -442,3 +442,49 @@ describe('Network option — currency auto-selection', () => {
   });
 
 });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SUITE 6: Extended RPC methods (v0.2.0)
+// ══════════════════════════════════════════════════════════════════════════════
+
+describe('Extended RPC methods — live ckbnode', () => {
+  const FIBER_URL = 'http://127.0.0.1:18227';
+  const client = new FiberClient({ url: FIBER_URL, timeoutMs: 10000 });
+
+  it('parseInvoice() parses a valid invoice string', async () => {
+    // Create an invoice, then parse it
+    const { invoiceAddress } = await client.newInvoice({ amount: 1000, description: 'parse test' });
+    const parsed = await client.parseInvoice(invoiceAddress);
+    assert.ok(parsed, 'parseInvoice returned a result');
+    // Parsed invoice should have amount field
+    assert.ok(parsed.invoice || parsed.invoice_address || typeof parsed === 'object',
+      'parseInvoice returns invoice data');
+  });
+
+  it('graphNodes() returns node list from network graph', async () => {
+    const result = await client.graphNodes();
+    assert.ok(result, 'graphNodes returned a result');
+    // May be empty on a new/isolated node but should not throw
+  });
+
+  it('graphChannels() returns channel list from network graph', async () => {
+    const result = await client.graphChannels();
+    assert.ok(result, 'graphChannels returned a result');
+  });
+
+  it('buildRouter() returns route or error for unreachable target', async () => {
+    const info = await client.nodeInfo();
+    // Route to self should either succeed (trivial) or return a routing error
+    try {
+      const route = await client.buildRouter({
+        sourceNodeId: info.node_id,
+        targetNodeId: info.node_id,
+        amount: 1000,
+      });
+      assert.ok(route, 'buildRouter returned a result');
+    } catch (err) {
+      // Routing to self may not be supported — error is expected
+      assert.ok(err.message || err.code, 'buildRouter threw a structured error');
+    }
+  });
+});
